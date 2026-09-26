@@ -1,8 +1,8 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const request = require('supertest');
-const tickets = require('../src/models/tickets');
-const { setup, makeUser, loginAs } = require('./helpers');
+const tickets = require('../../src/models/tickets');
+const { setup, makeUser, loginAs } = require('../helpers');
 
 function makeTicket(db, customerId, overrides = {}) {
   return tickets.createTicket(db, {

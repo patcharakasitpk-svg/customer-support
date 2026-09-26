@@ -1,8 +1,8 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { openDb } = require('../src/db');
-const users = require('../src/models/users');
-const { seed } = require('../scripts/seed');
+const { openDb } = require('../../src/db');
+const users = require('../../src/models/users');
+const { seed } = require('../../scripts/seed');
 
 function count(db, table) {
   return db.prepare(`SELECT COUNT(*) AS n FROM ${table}`).get().n;

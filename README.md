@@ -38,8 +38,20 @@ npm start        # เปิด http://localhost:3000
 ## รันเทสต์
 
 ```bash
-npm test
+npm test                  # ทั้งหมด
+npm run test:unit         # unit test: ทดสอบแต่ละฟังก์ชันแยกกัน ไม่ต้องเปิดเซิร์ฟเวอร์
+npm run test:integration  # integration test: ยิง HTTP เข้าแอปจริงผ่าน supertest
+npm run test:coverage     # รันทั้งหมดพร้อมรายงาน code coverage
 ```
+
+| โฟลเดอร์ | ทดสอบอะไร |
+|---|---|
+| `tests/unit/validation.test.js` | กฎตรวจฟอร์มสมัครสมาชิกและ ticket |
+| `tests/unit/middleware-auth.test.js` | การกันสิทธิ์ (login / บทบาท) ด้วย req/res จำลอง |
+| `tests/unit/forms.test.js`, `labels.test.js` | ตัวช่วยอ่านค่าฟอร์ม, ป้ายภาษาไทย และการแปลงเวลาเป็นเวลาไทย |
+| `tests/unit/models/*.test.js` | users, tickets, replies บนฐานข้อมูล `:memory:` |
+| `tests/unit/seed.test.js` | ข้อมูลตัวอย่างรันซ้ำได้โดยไม่ซ้ำ |
+| `tests/integration/*.test.js` | flow ผ่านหน้าเว็บ: สมัคร, login, ticket, ตอบกลับ, สิทธิ์ |
 
 ## โครงสร้างโปรเจกต์
 
@@ -52,7 +64,8 @@ src/
   routes/         หน้าเว็บและฟอร์ม
   views/          template EJS
 scripts/seed.js   ข้อมูลตัวอย่าง
-tests/            เทสต์อัตโนมัติ
+tests/unit/       unit test
+tests/integration/ integration test
 docs/superpowers/ spec และแผนการพัฒนา
 ```
 
@@ -65,7 +78,7 @@ flowchart TD
   entry["entry<br/>server.js · scripts/seed.js"]
   app["app.js"]
   routes["routes/*<br/>auth · tickets"]
-  helpers["forms · labels"]
+  helpers["forms · labels · validation"]
   mw["middleware/auth"]
   models["models/*<br/>users · tickets · replies"]
   db["db.js"]
@@ -79,11 +92,13 @@ flowchart TD
   routes --> mw
   routes --> helpers
   routes --> models
+  helpers --> models
   db -. "ส่ง db เป็นพารามิเตอร์" .-> models
 ```
 
 - มีเพียง entry ที่ import `db.js` ส่วน models รับ `db` เป็นพารามิเตอร์ เทสต์จึงใช้ฐานข้อมูล `:memory:` แทนได้
 - routes เข้าถึงข้อมูลผ่าน models เท่านั้น และไม่มี import วนกัน
+- `validation.js` import เฉพาะรายการค่าที่อนุญาต (`CATEGORIES`, `PRIORITIES`) จาก `models/tickets`
 
 ## สิ่งที่ยังไม่ได้ทำ (ต่อยอดได้)
 

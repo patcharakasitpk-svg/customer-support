@@ -1,8 +1,8 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const request = require('supertest');
-const users = require('../src/models/users');
-const { setup, makeUser, loginAs } = require('./helpers');
+const users = require('../../src/models/users');
+const { setup, makeUser, loginAs } = require('../helpers');
 
 test('GET / sends anonymous visitors to /login', async () => {
   const { app } = setup();

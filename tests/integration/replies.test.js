@@ -1,8 +1,8 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const tickets = require('../src/models/tickets');
-const replies = require('../src/models/replies');
-const { setup, makeUser, loginAs } = require('./helpers');
+const tickets = require('../../src/models/tickets');
+const replies = require('../../src/models/replies');
+const { setup, makeUser, loginAs } = require('../helpers');
 
 function scenario() {
   const { app, db } = setup();
