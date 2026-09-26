@@ -1,0 +1,46 @@
+<%- include('../partials/header', { title: 'รายการ ticket' }) %>
+<div class="page-head">
+  <h1><%= currentUser.role === 'agent' ? 'ticket ทั้งหมด' : 'ticket ของฉัน' %></h1>
+  <% if (currentUser.role === 'customer') { %>
+    <a class="button" href="/tickets/new">+ สร้าง ticket</a>
+  <% } %>
+</div>
+<nav class="filters">
+  <a href="/tickets" class="<%= status ? '' : 'active' %>">ทั้งหมด</a>
+  <% Object.entries(labels.status).forEach(([value, label]) => { %>
+    <a href="/tickets?status=<%= value %>" class="<%= status === value ? 'active' : '' %>"><%= label %></a>
+  <% }) %>
+</nav>
+<% if (tickets.length === 0) { %>
+  <p class="empty">ยังไม่มี ticket</p>
+<% } else { %>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>หัวข้อ</th>
+          <% if (currentUser.role === 'agent') { %><th>ลูกค้า</th><% } %>
+          <th>หมวดหมู่</th>
+          <th>ความเร่งด่วน</th>
+          <th>สถานะ</th>
+          <th>อัปเดตล่าสุด</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% tickets.forEach((t) => { %>
+          <tr>
+            <td><%= t.id %></td>
+            <td><a href="/tickets/<%= t.id %>"><%= t.subject %></a></td>
+            <% if (currentUser.role === 'agent') { %><td><%= t.customer_name %></td><% } %>
+            <td><%= labels.category[t.category] %></td>
+            <td><%= labels.priority[t.priority] %></td>
+            <td><span class="badge status-<%= t.status %>"><%= labels.status[t.status] %></span></td>
+            <td><%= labels.formatDate(t.updated_at) %></td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+<% } %>
+<%- include('../partials/footer') %>

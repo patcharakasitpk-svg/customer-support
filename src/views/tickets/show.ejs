@@ -1,0 +1,47 @@
+<%- include('../partials/header', { title: ticket.subject }) %>
+<p><a href="/tickets">← กลับไปหน้ารายการ</a></p>
+<article class="card">
+  <h1>#<%= ticket.id %> <%= ticket.subject %></h1>
+  <p class="meta">
+    <span class="badge status-<%= ticket.status %>"><%= labels.status[ticket.status] %></span>
+    หมวดหมู่: <%= labels.category[ticket.category] %> ·
+    ความเร่งด่วน: <%= labels.priority[ticket.priority] %> ·
+    โดย <%= ticket.customer_name %> · <%= labels.formatDate(ticket.created_at) %>
+  </p>
+  <p class="body"><%= ticket.description %></p>
+</article>
+
+<% if (currentUser.role === 'agent') { %>
+  <form method="post" action="/tickets/<%= ticket.id %>/status" class="card inline">
+    <label>เปลี่ยนสถานะ
+      <select name="status">
+        <% Object.entries(labels.status).forEach(([value, label]) => { %>
+          <option value="<%= value %>" <%= ticket.status === value ? 'selected' : '' %>><%= label %></option>
+        <% }) %>
+      </select>
+    </label>
+    <button>บันทึก</button>
+  </form>
+<% } %>
+
+<h2>บทสนทนา</h2>
+<% if (replies.length === 0) { %>
+  <p class="empty">ยังไม่มีการตอบกลับ</p>
+<% } %>
+<% replies.forEach((r) => { %>
+  <div class="reply reply-<%= r.author_role %>">
+    <p class="meta"><strong><%= r.author_name %></strong> (<%= labels.role[r.author_role] %>) · <%= labels.formatDate(r.created_at) %></p>
+    <p class="body"><%= r.body %></p>
+  </div>
+<% }) %>
+
+<%- include('../partials/errors') %>
+<% if (ticket.status === 'closed') { %>
+  <p class="notice">ticket นี้ปิดแล้ว หากต้องการความช่วยเหลือเพิ่มเติมกรุณาสร้าง ticket ใหม่</p>
+<% } else { %>
+  <form method="post" action="/tickets/<%= ticket.id %>/replies" class="card">
+    <label>ตอบกลับ<textarea name="body" rows="4" required><%= replyBody %></textarea></label>
+    <button>ส่งข้อความ</button>
+  </form>
+<% } %>
+<%- include('../partials/footer') %>

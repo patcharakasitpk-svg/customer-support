@@ -1,0 +1,26 @@
+<%- include('../partials/header', { title: 'สร้าง ticket' }) %>
+<p><a href="/tickets">← กลับไปหน้ารายการ</a></p>
+<section class="card">
+  <h1>สร้าง ticket ใหม่</h1>
+  <%- include('../partials/errors') %>
+  <form method="post" action="/tickets/new">
+    <label>หัวข้อ<input name="subject" maxlength="200" required value="<%= values.subject %>"></label>
+    <label>รายละเอียด<textarea name="description" rows="6" required><%= values.description %></textarea></label>
+    <label>หมวดหมู่
+      <select name="category">
+        <% Object.entries(labels.category).forEach(([value, label]) => { %>
+          <option value="<%= value %>" <%= values.category === value ? 'selected' : '' %>><%= label %></option>
+        <% }) %>
+      </select>
+    </label>
+    <label>ความเร่งด่วน
+      <select name="priority">
+        <% Object.entries(labels.priority).forEach(([value, label]) => { %>
+          <option value="<%= value %>" <%= values.priority === value ? 'selected' : '' %>><%= label %></option>
+        <% }) %>
+      </select>
+    </label>
+    <button>ส่ง ticket</button>
+  </form>
+</section>
+<%- include('../partials/footer') %>

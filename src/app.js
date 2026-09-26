@@ -4,6 +4,7 @@ const session = require('express-session');
 const labels = require('./labels');
 const users = require('./models/users');
 const authRoutes = require('./routes/auth');
+const ticketRoutes = require('./routes/tickets');
 
 function createApp({ db, sessionSecret = process.env.SESSION_SECRET || 'dev-only-secret-change-me' }) {
   const app = express();
@@ -31,6 +32,7 @@ function createApp({ db, sessionSecret = process.env.SESSION_SECRET || 'dev-only
 
   app.get('/', (req, res) => res.redirect(req.user ? '/tickets' : '/login'));
   app.use(authRoutes(db));
+  app.use('/tickets', ticketRoutes(db));
 
   app.use((req, res) => {
     res.status(404).render('error', { title: 'ไม่พบหน้า', message: 'ไม่พบหน้าหรือข้อมูลที่คุณต้องการ' });
