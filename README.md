@@ -56,6 +56,35 @@ tests/            เทสต์อัตโนมัติ
 docs/superpowers/ spec และแผนการพัฒนา
 ```
 
+## Package dependency
+
+ลูกศรคือ `require()` ระหว่างไฟล์ใน `src/` และ `scripts/` (ไม่รวม `tests/`, view และ npm package) ส่วนเส้นประคือค่าที่ส่งให้ตอนรัน ไม่ได้ import
+
+```mermaid
+flowchart TD
+  entry["entry<br/>server.js · scripts/seed.js"]
+  app["app.js"]
+  routes["routes/*<br/>auth · tickets"]
+  helpers["forms · labels"]
+  mw["middleware/auth"]
+  models["models/*<br/>users · tickets · replies"]
+  db["db.js"]
+
+  entry --> app
+  entry --> models
+  entry --> db
+  app --> routes
+  app --> helpers
+  app --> models
+  routes --> mw
+  routes --> helpers
+  routes --> models
+  db -. "ส่ง db เป็นพารามิเตอร์" .-> models
+```
+
+- มีเพียง entry ที่ import `db.js` ส่วน models รับ `db` เป็นพารามิเตอร์ เทสต์จึงใช้ฐานข้อมูล `:memory:` แทนได้
+- routes เข้าถึงข้อมูลผ่าน models เท่านั้น และไม่มี import วนกัน
+
 ## สิ่งที่ยังไม่ได้ทำ (ต่อยอดได้)
 
 - CSRF token สำหรับฟอร์ม
