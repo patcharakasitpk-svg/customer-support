@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title><%= title %> · Customer Support</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="/">Customer Support</a>
+  <% if (locals.currentUser) { %>
+    <span class="who"><%= currentUser.name %> · <%= labels.role[currentUser.role] %></span>
+    <form method="post" action="/logout"><button class="link">ออกจากระบบ</button></form>
+  <% } %>
+</header>
+<main>
