@@ -74,6 +74,17 @@ test('wrong password shows a generic error', async () => {
   assert.match(res.text, /อีเมลหรือรหัสผ่านไม่ถูกต้อง/);
 });
 
+test('empty login form asks for both fields', async () => {
+  const { app } = setup();
+  const res = await request(app)
+    .post('/login')
+    .type('form')
+    .send({ email: 'ann@example.com', password: '' })
+    .expect(400);
+  assert.match(res.text, /กรุณากรอกอีเมลและรหัสผ่าน/);
+  assert.match(res.text, /value="ann@example.com"/);
+});
+
 test('logout ends the session', async () => {
   const { app, db } = setup();
   const user = makeUser(db);

@@ -1,7 +1,7 @@
 const express = require('express');
 const users = require('../models/users');
 const { text } = require('../forms');
-const { validateRegistration } = require('../validation');
+const { validateRegistration, validateLogin } = require('../validation');
 const { requireLogin, redirectIfLoggedIn } = require('../middleware/auth');
 
 // A fresh session id on login prevents session fixation.
@@ -37,7 +37,11 @@ module.exports = function authRoutes(db) {
 
   router.post('/login', redirectIfLoggedIn, (req, res, next) => {
     const email = users.normalizeEmail(req.body.email);
-    const user = users.authenticate(db, email, text(req.body.password));
+    const password = text(req.body.password);
+    const errors = validateLogin({ email, password });
+    if (errors.length) return res.status(400).render('login', { errors, values: { email } });
+
+    const user = users.authenticate(db, email, password);
     if (!user) {
       return res
         .status(400)

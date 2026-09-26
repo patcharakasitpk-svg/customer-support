@@ -2,13 +2,18 @@ const { CATEGORIES, PRIORITIES } = require('./models/tickets');
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-// Both validators expect values already trimmed/normalized by the route, and return Thai messages in form order.
+// These validators expect values already trimmed/normalized by the route, and return Thai messages in form order.
 function validateRegistration({ name, email, password }) {
   const errors = [];
   if (!name) errors.push('กรุณากรอกชื่อ');
   if (!EMAIL_PATTERN.test(email)) errors.push('รูปแบบอีเมลไม่ถูกต้อง');
   if (password.length < 8) errors.push('รหัสผ่านต้องมีอย่างน้อย 8 ตัวอักษร');
   return errors;
+}
+
+// Only checks for blanks; wrong credentials get the generic error from the route.
+function validateLogin({ email, password }) {
+  return email && password ? [] : ['กรุณากรอกอีเมลและรหัสผ่าน'];
 }
 
 function validateTicket({ subject, description, category, priority }) {
@@ -21,4 +26,4 @@ function validateTicket({ subject, description, category, priority }) {
   return errors;
 }
 
-module.exports = { validateRegistration, validateTicket };
+module.exports = { validateRegistration, validateLogin, validateTicket };

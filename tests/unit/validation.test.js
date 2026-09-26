@@ -1,6 +1,6 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { validateRegistration, validateTicket } = require('../../src/validation');
+const { validateRegistration, validateLogin, validateTicket } = require('../../src/validation');
 
 const validUser = { name: 'Ann', email: 'ann@example.com', password: 'password123' };
 const validTicket = { subject: 'Cannot log in', description: 'Details', category: 'usage', priority: 'high' };
@@ -32,6 +32,20 @@ test('validateRegistration reports every problem at once, in form order', () => 
     'รูปแบบอีเมลไม่ถูกต้อง',
     'รหัสผ่านต้องมีอย่างน้อย 8 ตัวอักษร',
   ]);
+});
+
+test('validateLogin accepts a filled-in form', () => {
+  assert.deepEqual(validateLogin({ email: 'ann@example.com', password: 'x' }), []);
+});
+
+test('validateLogin requires both email and password', () => {
+  for (const values of [
+    { email: '', password: 'password123' },
+    { email: 'ann@example.com', password: '' },
+    { email: '', password: '' },
+  ]) {
+    assert.deepEqual(validateLogin(values), ['กรุณากรอกอีเมลและรหัสผ่าน'], JSON.stringify(values));
+  }
 });
 
 test('validateTicket accepts a complete form', () => {
