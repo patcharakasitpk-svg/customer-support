@@ -2,20 +2,11 @@ const express = require('express');
 const tickets = require('../models/tickets');
 const replies = require('../models/replies');
 const { text } = require('../forms');
+const { validateTicket } = require('../validation');
 const { requireLogin, requireRole } = require('../middleware/auth');
 
 function notFound(res) {
   return res.status(404).render('error', { title: 'ไม่พบหน้า', message: 'ไม่พบหน้าหรือข้อมูลที่คุณต้องการ' });
-}
-
-function validateTicket(values) {
-  const errors = [];
-  if (!values.subject) errors.push('กรุณากรอกหัวข้อ');
-  else if (values.subject.length > 200) errors.push('หัวข้อต้องยาวไม่เกิน 200 ตัวอักษร');
-  if (!values.description) errors.push('กรุณากรอกรายละเอียด');
-  if (!tickets.CATEGORIES.includes(values.category)) errors.push('กรุณาเลือกหมวดหมู่');
-  if (!tickets.PRIORITIES.includes(values.priority)) errors.push('กรุณาเลือกความเร่งด่วน');
-  return errors;
 }
 
 function renderShow(res, db, ticket, { status = 200, errors = [], replyBody = '' } = {}) {

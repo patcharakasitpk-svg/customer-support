@@ -1,9 +1,8 @@
 const express = require('express');
 const users = require('../models/users');
 const { text } = require('../forms');
+const { validateRegistration } = require('../validation');
 const { requireLogin, redirectIfLoggedIn } = require('../middleware/auth');
-
-const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 // A fresh session id on login prevents session fixation.
 function logIn(req, res, next, userId) {
@@ -24,10 +23,7 @@ module.exports = function authRoutes(db) {
   router.post('/register', redirectIfLoggedIn, (req, res, next) => {
     const values = { name: text(req.body.name).trim(), email: users.normalizeEmail(req.body.email) };
     const password = text(req.body.password);
-    const errors = [];
-    if (!values.name) errors.push('กรุณากรอกชื่อ');
-    if (!EMAIL_PATTERN.test(values.email)) errors.push('รูปแบบอีเมลไม่ถูกต้อง');
-    if (password.length < 8) errors.push('รหัสผ่านต้องมีอย่างน้อย 8 ตัวอักษร');
+    const errors = validateRegistration({ ...values, password });
     if (errors.length === 0 && users.findByEmail(db, values.email)) errors.push('อีเมลนี้ถูกใช้แล้ว');
     if (errors.length) return res.status(400).render('register', { errors, values });
 
