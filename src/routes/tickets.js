@@ -70,6 +70,30 @@ module.exports = function ticketRoutes(db) {
 
   router.get('/:id', (req, res) => renderShow(res, db, req.ticket));
 
+  router.post('/:id/replies', (req, res) => {
+    const body = text(req.body.body).trim();
+    if (req.ticket.status === 'closed') {
+      return renderShow(res, db, req.ticket, {
+        status: 400,
+        errors: ['ticket นี้ปิดแล้ว ไม่สามารถตอบกลับได้'],
+      });
+    }
+    if (!body) {
+      return renderShow(res, db, req.ticket, { status: 400, errors: ['กรุณากรอกข้อความ'] });
+    }
+    replies.addReply(db, { ticketId: req.ticket.id, author: req.user, body });
+    res.redirect(`/tickets/${req.ticket.id}`);
+  });
+
+  router.post('/:id/status', requireRole('agent'), (req, res) => {
+    const status = text(req.body.status);
+    if (!tickets.STATUSES.includes(status)) {
+      return res.status(400).render('error', { title: 'ข้อมูลไม่ถูกต้อง', message: 'สถานะที่เลือกไม่ถูกต้อง' });
+    }
+    tickets.updateStatus(db, req.ticket.id, status);
+    res.redirect(`/tickets/${req.ticket.id}`);
+  });
+
   return router;
 };
 
